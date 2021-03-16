@@ -90,8 +90,8 @@ class PostgresToRedshift
   end
 
   def copy_table(table)
-    tmpfile = Tempfile.new("psql2rs")
-    zip = Zlib::GzipWriter.new(tmpfile)
+    tmpfile = Tempfile.new("psql2rs", encoding: "ASCII-8BIT")
+    zip = Zlib::GzipWriter.new(tmpfile, nil, nil, encoding: "ASCII-8BIT")
     chunksize = 5 * GIGABYTE # uncompressed
     chunk = 1
     bucket.objects.with_prefix("export/#{table.target_table_name}.psv.gz").delete_all
@@ -109,8 +109,8 @@ class PostgresToRedshift
             chunk += 1
             zip.close unless zip.closed?
             tmpfile.unlink
-            tmpfile = Tempfile.new("psql2rs")
-            zip = Zlib::GzipWriter.new(tmpfile)
+            tmpfile = Tempfile.new("psql2rs", encoding: "ASCII-8BIT")
+            zip = Zlib::GzipWriter.new(tmpfile, nil, nil, encoding: "ASCII-8BIT")
           end
         end
       end
