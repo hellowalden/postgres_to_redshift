@@ -31,8 +31,9 @@ class PostgresToRedshift
 
     def columns=(column_definitions = [])
       @columns = column_definitions.map do |column_definition|
+        next if ENV['POSTGRES_TO_REDSHIFT_SKIP_COLUMNS'].split(',').include? column_definition['column_name']
         Column.new(attributes: column_definition)
-      end
+      end.compact
     end
 
     def columns_for_create
