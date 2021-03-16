@@ -18,11 +18,12 @@ class PostgresToRedshift
   MEGABYTE = KILOBYTE * 1024
   GIGABYTE = MEGABYTE * 1024
 
-  def self.update_tables
+  def self.update_tables(prefix)
     update_tables = PostgresToRedshift.new
 
     update_tables.tables.each do |table|
-      
+      next if prefix.present? && !(table.name =~ /^#{prefix}/)
+
       target_connection.exec("CREATE TABLE IF NOT EXISTS #{schema}.#{target_connection.quote_ident(table.target_table_name)} (#{table.columns_for_create})")
 
       update_tables.copy_table(table)
